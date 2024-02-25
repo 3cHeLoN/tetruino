@@ -9,6 +9,16 @@
 int main()
 {
     auto factory = new TetrominoFactory();
-    auto tetromino = factory->create("l");
+    auto tetromino = factory->create(T_block);
     tetromino.m_matrix.print();
+}
+
+
+
+void game()
+{
+    bool game_over = false;
+    while (!game_over)
+    {
+    }
 }

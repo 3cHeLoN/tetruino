@@ -7,5 +7,5 @@ class TetrominoFactory
 {
     public:
         TetrominoFactory();
-        Tetromino create(std::string name);
+        Tetromino create(TetrominoType name);
 };

@@ -6,29 +6,22 @@
 
 #include "tetromino_factory.h"
 
-const std::map<std::string, std::vector<std::vector<int>>> Tetrominos = {
-    {"i", {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},
-    {"o", {{1, 1}, {1, 1}}},
-    {"t", {{0, 1, 0}, {1, 1, 1}, {0, 0, 0}}},
-    {"j", {{1, 0, 0}, {1, 1, 1}, {0, 0, 0}}},
-    {"l", {{0, 0, 1}, {1, 1, 1}, {0, 0, 0}}},
-    {"s", {{0, 1, 1}, {1, 1, 0}, {0, 0, 0}}},
-    {"z", {{1, 1, 0}, {0, 1, 1}, {0, 0, 0}}},
+const std::map<TetrominoType, std::vector<std::vector<int>>> Tetrominos = {
+    {I_block, {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},
+    {O_block, {{1, 1}, {1, 1}}},
+    {T_block, {{0, 1, 0}, {1, 1, 1}, {0, 0, 0}}},
+    {J_block, {{1, 0, 0}, {1, 1, 1}, {0, 0, 0}}},
+    {L_block, {{0, 0, 1}, {1, 1, 1}, {0, 0, 0}}},
+    {S_block, {{0, 1, 1}, {1, 1, 0}, {0, 0, 0}}},
+    {Z_block, {{1, 1, 0}, {0, 1, 1}, {0, 0, 0}}},
 };
 
 TetrominoFactory::TetrominoFactory()
 {
 }
 
-Tetromino TetrominoFactory::create(std::string name)
+Tetromino TetrominoFactory::create(TetrominoType type)
 {
-    std::vector<std::string> tetromino_names = {"i", "o", "t", "j", "l", "s", "z"};
-
-    if (std::find(tetromino_names.begin(), tetromino_names.end(), name) == tetromino_names.end())
-    {
-        throw std::runtime_error("The tetromino " + name + " does not exist.");
-    }
-
-    auto matrix = Matrix<int>(Tetrominos.at(name));
+    auto matrix = Matrix<int>(Tetrominos.at(type));
     return Tetromino(matrix);
 }
