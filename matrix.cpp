@@ -48,7 +48,93 @@ void Matrix<T>::print() const {
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) const {
+Matrix<T> Matrix<T>::get_slice(int row_start, int col_start, int width, int height)
+{
+    if (width > numCols() || height > numRows())
+    {
+        std::cerr << "Cannot take a slice larger than matrix." << '\n';
+    }
+
+    auto matrix = Matrix<T>(height, width);
+
+    for (int row_index = row_start; row_index < row_start + height; row_index++)
+    {
+        for (int col_index = col_start; col_index < col_start + width; col_index++)
+        {
+            matrix(row_index - row_start, col_index - col_start) = data[row_index][col_index];
+        }
+    }
+
+    return matrix;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::operator-(std::vector<T> vec)
+{
+    Matrix<T> result(rows, cols);
+
+    for (size_t i = 0; i < rows; i++)
+    {
+        for (size_t j = 0; j < cols; j++)
+        {
+            result(i, j) = data[i][j] - vec[i];
+        }
+    }
+
+    return result;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::operator+(std::vector<T> vec)
+{
+    Matrix<T> result(rows, cols);
+
+    for (size_t i = 0; i < rows; i++)
+    {
+        for (size_t j = 0; j < cols; j++)
+        {
+            result(i, j) = data[i][j] + vec[i];
+        }
+    }
+
+    return result;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::operator-(T value)
+{
+    Matrix<T> result(rows, cols);
+
+    for (size_t i = 0; i < rows; i++)
+    {
+        for (size_t j = 0; j < cols; j++)
+        {
+            result(i, j) = data[i][j] - value;
+        }
+    }
+
+    return result;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::operator+(T value)
+{
+    Matrix<T> result(rows, cols);
+
+    for (size_t i = 0; i < rows; i++)
+    {
+        for (size_t j = 0; j < cols; j++)
+        {
+            result(i, j) = data[i][j] + value;
+        }
+    }
+
+    return result;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::operator*(const Matrix<T>& other) const
+{
     if (cols != other.rows) {
         std::cerr << "Matrix dimensions do not match for multiplication." << std::endl;
         return Matrix<T>(0, 0);

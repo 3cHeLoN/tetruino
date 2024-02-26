@@ -19,9 +19,14 @@ class Tetromino
     private:
         Color color;
         int row, col;
+        int m_rotation;
+        
     public:
-        Matrix<int> m_matrix;
-        Tetromino(const Matrix<int>& matrix);
+        std::vector<Matrix<int>> m_matrices;
+        Tetromino(const std::vector<Matrix<int>>& matrices);
         int get_row() { return row; };
         int get_col() { return col; };
+        void rotate_clockwise();
+        void rotate_counter_clockwise();
+        void print();
 };

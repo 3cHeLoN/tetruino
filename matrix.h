@@ -23,10 +23,15 @@ public:
     // Getters
     size_t numRows() const;
     size_t numCols() const;
-
+    Matrix<T> get_slice(int row_start, int col_start, int width, int height);
+    
     // Print
     void print() const;
 
-    // Matrix multiplication
+    // Matrix operations
     Matrix<T> operator*(const Matrix<T>& other) const;
+    Matrix<T> operator+(T value);
+    Matrix<T> operator-(T value);
+    Matrix<T> operator+(std::vector<T> vec);
+    Matrix<T> operator-(std::vector<T> vec);
 };

@@ -6,22 +6,53 @@
 
 #include "tetromino_factory.h"
 
-const std::map<TetrominoType, std::vector<std::vector<int>>> Tetrominos = {
-    {I_block, {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}},
-    {O_block, {{1, 1}, {1, 1}}},
-    {T_block, {{0, 1, 0}, {1, 1, 1}, {0, 0, 0}}},
-    {J_block, {{1, 0, 0}, {1, 1, 1}, {0, 0, 0}}},
-    {L_block, {{0, 0, 1}, {1, 1, 1}, {0, 0, 0}}},
-    {S_block, {{0, 1, 1}, {1, 1, 0}, {0, 0, 0}}},
-    {Z_block, {{1, 1, 0}, {0, 1, 1}, {0, 0, 0}}},
+const std::map<TetrominoType, std::vector<Matrix<int>>> Tetrominos = {
+    {I_block, {
+        Matrix<int>({{0, 0, 0, 0}, {1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}}),
+        Matrix<int>({{0, 0, 1, 0}, {0, 0, 1, 0}, {0, 0, 1, 0}, {0, 0, 1, 0}}),
+        Matrix<int>({{0, 0, 0, 0}, {0, 0, 0, 0}, {1, 1, 1, 1}, {0, 0, 0, 0}}),
+        Matrix<int>({{0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}}),
+    }},
+    {O_block, {
+        Matrix<int>({{1, 1}, {1, 1}}),
+        Matrix<int>({{1, 1}, {1, 1}}),
+        Matrix<int>({{1, 1}, {1, 1}}),
+        Matrix<int>({{1, 1}, {1, 1}}),
+    }},
+    {T_block, {
+        Matrix<int>({{0, 1, 0}, {1, 1, 1}, {0, 0, 0}}),
+        Matrix<int>({{0, 1, 0}, {0, 1, 1}, {0, 1, 0}}),
+        Matrix<int>({{0, 0, 0}, {1, 1, 1}, {0, 1, 0}}),
+        Matrix<int>({{0, 1, 0}, {1, 1, 0}, {0, 1, 0}}),
+    }},
+    {J_block, {
+        Matrix<int>({{1, 0, 0}, {1, 1, 1}, {0, 0, 0}}),
+        Matrix<int>({{0, 1, 0}, {0, 1, 0}, {0, 1, 1}}),
+        Matrix<int>({{0, 0, 0}, {1, 1, 1}, {1, 0, 0}}),
+        Matrix<int>({{1, 1, 0}, {0, 1, 0}, {1, 1, 0}}),
+    }},
+    {L_block, {
+        Matrix<int>({{0, 0, 1}, {1, 1, 1}, {0, 0, 0}}),
+        Matrix<int>({{0, 1, 0}, {0, 1, 0}, {0, 1, 1}}),
+        Matrix<int>({{0, 0, 0}, {1, 1, 1}, {1, 0, 0}}),
+        Matrix<int>({{1, 1, 0}, {0, 1, 0}, {0, 1, 0}}),
+    }},
+    {S_block, {
+        Matrix<int>({{0, 1, 1}, {1, 1, 0}, {0, 0, 0}}),
+        Matrix<int>({{0, 1, 0}, {0, 1, 1}, {0, 0, 1}}),
+        Matrix<int>({{0, 0, 0}, {0, 1, 1}, {1, 1, 0}}),
+        Matrix<int>({{1, 0, 0}, {1, 1, 0}, {1, 0, 0}}),
+    }},
+    {Z_block, {
+        Matrix<int>({{1, 1, 0}, {0, 1, 1}, {0, 0, 0}}),
+        Matrix<int>({{0, 0, 1}, {0, 1, 1}, {0, 1, 0}}),
+        Matrix<int>({{0, 0, 0}, {1, 1, 0}, {0, 1, 1}}),
+        Matrix<int>({{0, 1, 0}, {1, 1, 0}, {1, 0, 0}}),
+    }},
 };
-
-TetrominoFactory::TetrominoFactory()
-{
-}
 
 Tetromino TetrominoFactory::create(TetrominoType type)
 {
-    auto matrix = Matrix<int>(Tetrominos.at(type));
-    return Tetromino(matrix);
+    int rotation = 0;
+    return Tetromino(Tetrominos.at(type));
 }

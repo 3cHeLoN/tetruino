@@ -6,6 +6,5 @@
 class TetrominoFactory
 {
     public:
-        TetrominoFactory();
         Tetromino create(TetrominoType name);
 };
