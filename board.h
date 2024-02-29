@@ -12,4 +12,5 @@ class Board
         void check_block(Tetromino block, int row, int col);
         Matrix<int> get_slice(int row, int col, int width, int height);
         void set_block(int row, int col);
+        void show();
 };
