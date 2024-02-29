@@ -8,9 +8,12 @@ class Board
     private:
         Matrix<int> m_matrix;
     public:
+        int width, height;
         Board(int rows, int cols);
-        void check_block(Tetromino block, int row, int col);
+        bool check_block(Tetromino &tetromino);
         Matrix<int> get_slice(int row, int col, int width, int height);
         void set_block(int row, int col);
+        int get_block(int row, int col);
+        void place(Tetromino &tetromino);
         void show();
 };
