@@ -12,14 +12,21 @@
 #include "tetromino_factory.h"
 #include "tetromino.h"
 
-#define INITIAL_REPEAT_MS  30
-#define SECOND_REPEAT_MS 8
+#define REPEAT_MS 50
+#define INITIAL_REPEAT_MS  300
 
 typedef std::chrono::high_resolution_clock Clock;
 auto lastUpdateTime = Clock::now();
 bool initialRepeating = false;
 bool secondaryRepeating = false;
 auto lastKeyRepeat = Clock::now();
+
+bool DOWN_PRESSED = false;
+bool LEFT_PRESSED = false;
+bool RIGHT_PRESSED = false;
+bool UP_PRESSED = false;
+bool S_PRESSED = false;
+bool A_PRESSED = false;
 
 // // int main(int argc, char **argv)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -41,11 +48,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     bool game_over = false;
     int lastKeyRepeatTime;
-    bool repeat_condition;
+    bool repeat, keypressed = false;
+    bool firstpress = true;
+    auto repeat_ms = INITIAL_REPEAT_MS;
     SDL_Event e;
     while(!game_over)
     {
-        auto t1 = Clock::now();
         while (SDL_PollEvent(&e))
         {
             switch (e.type)
@@ -59,82 +67,92 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     {
                         break;
                     }
-                    // First time?
-                    if (!initialRepeating && !secondaryRepeating)
-                    {
-                        initialRepeating = true;
-                        lastKeyRepeat = Clock::now();
-                    }
+                    std::cout << "KEY DOWN" << '\n';
+                    keypressed = true;
 
-                    lastKeyRepeatTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - lastKeyRepeat).count();
-                    repeat_condition = (initialRepeating & (lastKeyRepeatTime > INITIAL_REPEAT_MS) || (secondaryRepeating & (lastKeyRepeatTime > SECOND_REPEAT_MS)));
-                    if (repeat_condition)
+                    switch (e.key.keysym.sym)
                     {
-                        std::cout << "Repeating, last time " << lastKeyRepeatTime << '\n';
-                        initialRepeating = false;
-                        lastKeyRepeat = Clock::now();
-                        switch (e.key.keysym.sym) {
-                            case SDLK_DOWN:
-                                printf("Go down!\n");
-                                game.move_down();
-                                break;
-                            case SDLK_LEFT:
-                                printf("Left key pressed!\n");
-                                game.move_left();
-                                break;
-                            case SDLK_RIGHT:
-                                printf("Right key pressed!\n");
-                                game.move_right();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        switch (e.key.keysym.sym) {
-                            case SDLK_UP:
-                            case SDLK_s:
-                                printf("Go down!\n");
-                                game.rotate(true);
-                                break;
-                            case SDLK_a:
-                                printf("Go down!\n");
-                                game.rotate(false);
-                                break;
-                            case SDLK_DOWN:
-                                printf("Go down!\n");
-                                game.move_down();
-                                break;
-                            case SDLK_LEFT:
-                                printf("Left key pressed!\n");
-                                game.move_left();
-                                break;
-                            case SDLK_RIGHT:
-                                printf("Right key pressed!\n");
-                                game.move_right();
-                                break;
-                            default:
-                                break;
-                        }
+                        case SDLK_UP:
+                            std::cout << "UP KEY" << '\n';
+                            UP_PRESSED = true;
+                            break;
+                        case SDLK_DOWN:
+                            std::cout << "DOWN KEY" << '\n';
+
+                            DOWN_PRESSED = true;
+                            break;
+                        case SDLK_LEFT:
+                            std::cout << "LEFT KEY" << '\n';
+
+                            LEFT_PRESSED = true;
+                            break;
+                        case SDLK_RIGHT:
+                            std::cout << "RIGHT KEY" << '\n';
+
+                            RIGHT_PRESSED = true;
+                            break;
+                        case SDLK_a:
+                            A_PRESSED = true;
+                            break;
+                        case SDLK_s:
+                            S_PRESSED = true;
+                            break;
                     }
                     break;
                 case SDL_KEYUP:
-                    std::cout << "Key up" << '\n';
-                    initialRepeating = false;
-                    secondaryRepeating = false;
-                    break;
-                default:
+                    repeat = false;
+                    keypressed = false;
+                    A_PRESSED = false;
+                    S_PRESSED = false;
+                    UP_PRESSED = false;
+                    DOWN_PRESSED = false;
+                    LEFT_PRESSED = false;
+                    RIGHT_PRESSED = false;
+                    firstpress = true;
+                    repeat_ms = INITIAL_REPEAT_MS;
                     break;
             }
         }
 
-        auto t2 = Clock::now();
-
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-        if (duration.count() > 10)
+        if (keypressed)
         {
-            std::cout << "Input handling took " << duration.count() << " milliseconds" << '\n';
+            // Handle non-repeatable keys first:
+            if (UP_PRESSED | S_PRESSED)
+            {
+                game.rotate(true);
+                UP_PRESSED = false;
+                S_PRESSED = false;
+            }
+            if (A_PRESSED)
+            {
+                game.rotate(false);
+                A_PRESSED = false;
+            }
+
+            auto polltime = Clock::now();
+            auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(polltime - lastKeyRepeat);
+            if (time_elapsed.count() > repeat_ms || firstpress)
+            {
+                lastKeyRepeat = polltime;
+
+                if (!firstpress)
+                {
+                    repeat_ms = REPEAT_MS;
+                }
+                if (LEFT_PRESSED)
+                {
+                    game.move_left();
+                }
+                if (RIGHT_PRESSED)
+                {
+                    game.move_right();
+                }
+                if (DOWN_PRESSED)
+                {
+                    game.move_down();
+                }
+                firstpress = false;
+            }
         }
 
         // Screen update.
