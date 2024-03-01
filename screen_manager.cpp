@@ -60,17 +60,18 @@ void ScreenManager::drawBox(int row, int col, Color color)
     drawSquare(row, col, Color(0, 255, 255), false);
 }
 
-void ScreenManager::draw(Board *board)
+void ScreenManager::draw(Board &board)
 {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    for (int row_index = 0; row_index < board->height; row_index++)
+    for (int row_index = 0; row_index < board.height; row_index++)
     {
-        for (int col_index = 0; col_index < board->width; col_index++)
+        for (int col_index = 0; col_index < board.width; col_index++)
         {
-            if (board->get_block(row_index, col_index) != 0)
+            if (board.get_block(row_index, col_index) != 0)
             {
-                drawBox(row_index, col_index, colormap.at((TetrominoType)(board->get_block(row_index, col_index))));
+                drawBox(row_index, col_index, colormap.at((TetrominoType)(board.get_block(row_index, col_index))));
             }
         }
     }
@@ -102,5 +103,4 @@ void ScreenManager::show()
     // Present the renderer
     SDL_RenderPresent(renderer);
     SDL_UpdateWindowSurface(window);
-    SDL_Delay(10000);
 }

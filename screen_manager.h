@@ -22,7 +22,7 @@ class ScreenManager
     public:
         int m_rows, m_cols;
         ScreenManager(int width, int height);
-        void draw(Board *board);
+        void draw(Board &board);
         void draw(Tetromino &tetromino);
         void show();
 };

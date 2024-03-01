@@ -69,7 +69,7 @@ const std::map<TetrominoType, Color> colormap
     {J_block, Color(83, 218, 63)},
     {L_block, Color(1, 237, 250)},
     {S_block, Color(234, 20, 28)},
-    {Z_block, Color(254, 729, 128)},
+    {Z_block, Color(254, 72, 128)},
 };
 
 // const std::map<TetrominoType, Color> colormap

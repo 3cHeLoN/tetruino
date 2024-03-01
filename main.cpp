@@ -4,18 +4,28 @@
 #include <Windows.h>
 #include <random>
 #include <map>
+#include <chrono>
 
 #include "board.h"
 #include "screen_manager.h"
 #include "tetromino_factory.h"
 #include "tetromino.h"
 
+ typedef std::chrono::high_resolution_clock Clock;
+auto lastUpdateTime = Clock::now();
+
+void screenUpdate(ScreenManager &manager, Board &board)
+{
+    manager.draw(board);
+    manager.show();
+    lastUpdateTime = Clock::now();
+}
 
 // // int main(int argc, char **argv)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    auto board = new Board(20, 10);
-    auto screen_manager = new ScreenManager(10, 20);
+    auto board = Board(20, 10);
+    auto screen_manager = ScreenManager(10, 20);
 
     std::random_device rd;
     std::mt19937 eng(rd());
@@ -26,9 +36,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     std::cout << "TETRIS!" << '\n';
     auto factory = new TetrominoFactory();
-    auto tetromino = factory->create(I_block);
-    std::cout << "The original block" << '\n';
-    tetromino.print();
 
     std::map<int, TetrominoType> tetrindex =
     {
@@ -50,27 +57,42 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         auto col = distr_col(eng);
         tetromino.set_position(row, col);
 
-        if (board->check_block(tetromino))
+        if (board.check_block(tetromino))
         {
-            board->place(tetromino);
+            board.place(tetromino);
         }
         {
             std::cout << "Could not place tetromino " << tetromino.get_type() << '\n';
             std::cout << "At position (" << row << ", " << col << ")" << '\n';
         }
     }
-    
-    screen_manager->draw(board);
-    screen_manager->show();
 
-    std::cout << '\n' << "The rotated block" << '\n';
-    tetromino.rotate_clockwise();
-    tetromino.print();
+    bool game_over = false;
+    SDL_Event e;
+    while(!game_over)
+    {
+        while (SDL_PollEvent(&e))
+        {
+            switch (e.type)
+            {
+                case SDL_QUIT:
+                    std::cout << "Game OVER" << '\n';
+                    game_over = true;
+                    break;
+            }
+        }
 
-    std::cout << '\n' << "The cc  rotated block" << '\n';
-    tetromino.rotate_counter_clockwise();
-    tetromino.rotate_counter_clockwise();
-    tetromino.print();
+
+        // Screen update.
+        auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - lastUpdateTime);
+        if (time_elapsed.count() >= 16)
+        {
+            screenUpdate(screen_manager, board);
+            std::cout << "Updating screen" << '\n';
+        }
+
+        SDL_Delay(10);
+    }
 
     return 0;
 }
