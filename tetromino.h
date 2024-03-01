@@ -72,16 +72,6 @@ const std::map<TetrominoType, Color> colormap
     {Z_block, Color(254, 72, 128)},
 };
 
-// const std::map<TetrominoType, Color> colormap
-// {
-//     {I_block, Color(207, 240, 158)},
-//     {O_block, Color(243, 134, 48)},
-//     {T_block, Color(192, 41, 66)},
-//     {J_block, Color(248, 202, 0)},
-//     {L_block, Color(11, 72, 107)},
-//     {S_block, Color(245, 105, 145)},
-//     {Z_block, Color(255, 159, 128)},
-// };
 
 class Tetromino
 {
@@ -92,12 +82,15 @@ class Tetromino
         std::vector<Matrix<int>> m_matrices;
         TetrominoType m_type;
     public:
+        Tetromino();
         Tetromino(TetrominoType type);
         int width() { return m_matrices[0].numCols(); };
         int height() { return m_matrices[0].numRows(); };
         TetrominoType get_type() { return m_type; };
         int get_row() { return m_row; };
         int get_col() { return m_col; };
+        void increase_row(bool direction);
+        void increase_col(bool direction);
         Color get_color() { return m_color; };
         void set_color(Color color);
         void set_position(int row, int col);

@@ -89,7 +89,6 @@ void ScreenManager::draw(Tetromino &tetromino)
             {
                 continue;
             }
-            std::cout << "Reading (" << row - start_row << ", " << col - start_col << ")" << '\n';
             if (tetromino(row - start_row, col - start_col) > 0)
             {
                 drawBox(row, col, tetromino.get_color());

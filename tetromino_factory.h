@@ -7,4 +7,5 @@ class TetrominoFactory
 {
     public:
         Tetromino create(TetrominoType name);
+        Tetromino create_random();
 };

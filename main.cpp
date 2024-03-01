@@ -7,35 +7,27 @@
 #include <chrono>
 
 #include "board.h"
+#include "game.h"
 #include "screen_manager.h"
 #include "tetromino_factory.h"
 #include "tetromino.h"
 
+#define INITIAL_REPEAT_MS  40
+#define SECOND_REPEAT_MS 8
+
  typedef std::chrono::high_resolution_clock Clock;
 auto lastUpdateTime = Clock::now();
-
-void screenUpdate(ScreenManager &manager, Board &board)
-{
-    manager.draw(board);
-    manager.show();
-    lastUpdateTime = Clock::now();
-}
+bool initialRepeating = false;
+bool secondaryRepeating = false;
+auto lastKeyRepeat = Clock::now();
 
 // // int main(int argc, char **argv)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    auto board = Board(20, 10);
     auto screen_manager = ScreenManager(10, 20);
-
-    std::random_device rd;
-    std::mt19937 eng(rd());
-    std::uniform_int_distribution<int> distr_block(0, 6);
-    std::uniform_int_distribution<int> distr_row(0, 20);
-    std::uniform_int_distribution<int> distr_col(0, 10);
-    int random_integer;
+    auto game = Game();
 
     std::cout << "TETRIS!" << '\n';
-    auto factory = new TetrominoFactory();
 
     std::map<int, TetrominoType> tetrindex =
     {
@@ -48,26 +40,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         {6, Z_block},
     };
 
-    for (int i = 0; i < 20; i++)
-    {
-        random_integer = distr_block(eng);
-        auto tetromino = factory->create(tetrindex.at(random_integer));
-
-        auto row = distr_row(eng);
-        auto col = distr_col(eng);
-        tetromino.set_position(row, col);
-
-        if (board.check_block(tetromino))
-        {
-            board.place(tetromino);
-        }
-        {
-            std::cout << "Could not place tetromino " << tetromino.get_type() << '\n';
-            std::cout << "At position (" << row << ", " << col << ")" << '\n';
-        }
-    }
-
     bool game_over = false;
+    int lastKeyRepeatTime;
+    bool repeat_condition;
     SDL_Event e;
     while(!game_over)
     {
@@ -79,21 +54,84 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     std::cout << "Game OVER" << '\n';
                     game_over = true;
                     break;
+                case SDL_KEYDOWN:
+                    // First time?
+                    if (!initialRepeating && !secondaryRepeating)
+                    {
+                        initialRepeating = true;
+                        lastKeyRepeat = Clock::now();
+                    }
+
+                    lastKeyRepeatTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - lastKeyRepeat).count();
+                    repeat_condition = (initialRepeating & (lastKeyRepeatTime > INITIAL_REPEAT_MS) || (secondaryRepeating & (lastKeyRepeatTime > SECOND_REPEAT_MS)));
+                    if (repeat_condition)
+                    {
+
+                        initialRepeating = false;
+                        lastKeyRepeat = Clock::now();
+                        switch (e.key.keysym.sym) {
+                            // case SDLK_UP:
+                            //     printf("Up key pressed!\n");
+                            //     break;
+                            // case SDLK_DOWN:
+                            //     printf("Down key pressed!\n");
+                            //     break;
+                            case SDLK_LEFT:
+                                printf("Left key pressed!\n");
+                                game.move_left();
+                                break;
+                            case SDLK_RIGHT:
+                                printf("Right key pressed!\n");
+                                game.move_right();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+                case SDL_KEYUP:
+                    std::cout << "Key up" << '\n';
+                    // Before repeat?
+                    if (!secondaryRepeating)
+                    {
+                        switch (e.key.keysym.sym) {
+                            case SDLK_LEFT:
+                                printf("Go left!\n");
+                                game.move_left();
+                                break;
+                            case SDLK_RIGHT:
+                                printf("Go right!\n");
+                                game.move_right();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    initialRepeating = false;
+                    secondaryRepeating = false;
+                    break;
+                default:
+                    break;
             }
         }
-
 
         // Screen update.
         auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - lastUpdateTime);
         if (time_elapsed.count() >= 16)
         {
-            screenUpdate(screen_manager, board);
-            std::cout << "Updating screen" << '\n';
+            // TODO: Should this be updated more frequently?
+            game_over = !game.update();
+            screen_manager.draw(game.board);
+            screen_manager.draw(game.tetromino);
+            screen_manager.show();
+
+            lastUpdateTime = Clock::now();
         }
 
-        SDL_Delay(10);
+        SDL_Delay(1);
     }
 
+    std::cout << "GAME OVER!!!" << '\n';
     return 0;
 }
 

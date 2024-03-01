@@ -1,5 +1,12 @@
 #include "board.h"
 
+Board::Board()
+{
+    width = 10;
+    height = 20;
+    m_matrix = Matrix<int>(height, width);
+}
+
 Board::Board(int rows, int cols)
 {
     width = cols;
@@ -12,7 +19,7 @@ int Board::get_block(int row, int col)
     return m_matrix(row, col);
 }
 
-void Board::place(Tetromino &tetromino)
+bool Board::place(Tetromino &tetromino)
 {
     int row = tetromino.get_row();
     int col = tetromino.get_col();
@@ -29,9 +36,18 @@ void Board::place(Tetromino &tetromino)
                 continue;
             }
             
+            // Game over?
+            if (row_index < 0)
+            {
+                return false;
+            }
+
+            std::cout << "Writing to row/col " << row_index << "/" << col_index << '\n';
             m_matrix(row_index, col_index) = tetromino(row_local, col_local) * tetromino.get_type();
         }
     }
+
+    return true;
 }
 
 Matrix<int> Board::get_slice(int row, int col, int width, int height)
@@ -55,18 +71,33 @@ bool Board::check_block(Tetromino &tetromino)
     int row = tetromino.get_row();
     int col = tetromino.get_col();
 
+    // Loop over tetromino entries
     for (int row_index = row; row_index < row + tetromino.height(); row_index++)
     {
         for (int col_index = col; col_index < col + tetromino.width(); col_index++)
         {
-            if (row_index >= height || col_index >= width)
+            int row_local = row_index - row;
+            int col_local = col_index - col;
+
+            if (row_index < 0)
+            {
+                continue;
+            }
+
+            if (tetromino(row_local, col_local) == 0)
+            {
+                continue;
+            }
+
+            // Out of bounds?
+            if ((row_index >= height || col_index >= width || col_index < 0))
             {
                 return false;
             }
 
-            if (tetromino(row_index - row, col_index - col) & m_matrix(row_index, col_index))
+            // Overlap?
+            if (m_matrix(row_index, col_index) > 0)
             {
-                // overlap
                 return false;
             }
         }
