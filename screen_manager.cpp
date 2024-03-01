@@ -51,18 +51,18 @@ void ScreenManager::drawBox(int row, int col, Color color)
     }
 
     // Clear the renderer
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
 
     // Draw the colored square
     drawSquare(row, col, color, true);
 
     // Draw the border
-    drawSquare(row, col, Color(0, 255, 255), false);
+    drawSquare(row, col, Color(146, 131, 116), false);
 }
 
 void ScreenManager::draw(Board &board)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
     SDL_RenderClear(renderer);
 
     for (int row_index = 0; row_index < board.height; row_index++)

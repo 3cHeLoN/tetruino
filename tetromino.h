@@ -61,15 +61,26 @@ const std::map<TetrominoType, std::vector<Matrix<int>>> Tetrominos = {
     }},
 };
 
+// const std::map<TetrominoType, Color> colormap
+// {
+//     {I_block, Color(253, 63, 89)},
+//     {O_block, Color(255, 200, 46)},
+//     {T_block, Color(254, 251, 52)},
+//     {J_block, Color(83, 218, 63)},
+//     {L_block, Color(1, 237, 250)},
+//     {S_block, Color(234, 20, 28)},
+//     {Z_block, Color(254, 72, 128)},
+// };
+
 const std::map<TetrominoType, Color> colormap
 {
-    {I_block, Color(253, 63, 89)},
-    {O_block, Color(255, 200, 46)},
-    {T_block, Color(254, 251, 52)},
-    {J_block, Color(83, 218, 63)},
-    {L_block, Color(1, 237, 250)},
-    {S_block, Color(234, 20, 28)},
-    {Z_block, Color(254, 72, 128)},
+    {I_block, Color(251, 73, 52)},
+    {O_block, Color(184, 187, 38)},
+    {T_block, Color(250, 189, 47)},
+    {J_block, Color(131, 165, 152)},
+    {L_block, Color(211, 134, 155)},
+    {S_block, Color(142, 192, 124)},
+    {Z_block, Color(235, 219, 178)},
 };
 
 

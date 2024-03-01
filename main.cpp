@@ -17,8 +17,6 @@
 
 typedef std::chrono::high_resolution_clock Clock;
 auto lastUpdateTime = Clock::now();
-bool initialRepeating = false;
-bool secondaryRepeating = false;
 auto lastKeyRepeat = Clock::now();
 
 bool DOWN_PRESSED = false;
@@ -160,14 +158,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         if (time_elapsed.count() >= 1)
         {
             // TODO: Should this be updated more frequently?
-            auto t1 = Clock::now();
             game_over = !game.update();
             screen_manager.draw(game.board);
             screen_manager.draw(game.tetromino);
             screen_manager.show();
-            auto t2 = Clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1);
-
+            
             lastUpdateTime = Clock::now();
         }
 
