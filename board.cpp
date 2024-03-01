@@ -104,3 +104,33 @@ bool Board::check_block(Tetromino &tetromino)
     }
     return true;
 }
+
+void Board::check_lines()
+{
+    int new_row_index = m_matrix.numRows() - 1;
+    for (int row_index = m_matrix.numRows() - 1; row_index >= 0; row_index--)
+    {
+        bool row_is_full = true;
+        for (int col_index = 0; col_index < m_matrix.numCols(); col_index++)
+        {
+            if (m_matrix(row_index, col_index) == 0)
+            {
+                row_is_full = false;
+                break;
+            }
+        }
+
+        if (!row_is_full)
+        {
+            // Copy row from above?
+            if (new_row_index != row_index)
+            {
+                for (int col_index = 0; col_index < m_matrix.numCols(); col_index++)
+                {
+                    m_matrix(new_row_index, col_index) = m_matrix(row_index, col_index);
+                }
+            }
+            new_row_index--;
+        }
+    }
+}

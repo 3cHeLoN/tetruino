@@ -17,4 +17,5 @@ class Board
         int get_block(int row, int col);
         bool place(Tetromino &tetromino);
         void show();
+        void check_lines();
 };

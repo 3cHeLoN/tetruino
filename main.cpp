@@ -70,12 +70,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                         initialRepeating = false;
                         lastKeyRepeat = Clock::now();
                         switch (e.key.keysym.sym) {
-                            // case SDLK_UP:
-                            //     printf("Up key pressed!\n");
-                            //     break;
-                            // case SDLK_DOWN:
-                            //     printf("Down key pressed!\n");
-                            //     break;
+                            case SDLK_DOWN:
+                                printf("Go down!\n");
+                                game.move_down();
+                                break;
                             case SDLK_LEFT:
                                 printf("Left key pressed!\n");
                                 game.move_left();
@@ -95,6 +93,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     if (!secondaryRepeating)
                     {
                         switch (e.key.keysym.sym) {
+                            case SDLK_UP:
+                            case SDLK_s:
+                                printf("Rotate!\n");
+                                game.rotate(true);
+                                break;
+                            case SDLK_a:
+                                game.rotate(false);
+                                break;
+                            case SDLK_DOWN:
+                                printf("Go down!\n");
+                                game.move_down();
+                                break;
                             case SDLK_LEFT:
                                 printf("Go left!\n");
                                 game.move_left();

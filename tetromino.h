@@ -37,9 +37,9 @@ const std::map<TetrominoType, std::vector<Matrix<int>>> Tetrominos = {
     }},
     {J_block, {
         Matrix<int>({{1, 0, 0}, {1, 1, 1}, {0, 0, 0}}),
-        Matrix<int>({{0, 1, 0}, {0, 1, 0}, {0, 1, 1}}),
-        Matrix<int>({{0, 0, 0}, {1, 1, 1}, {1, 0, 0}}),
-        Matrix<int>({{1, 1, 0}, {0, 1, 0}, {1, 1, 0}}),
+        Matrix<int>({{0, 1, 1}, {0, 1, 0}, {0, 1, 0}}),
+        Matrix<int>({{0, 0, 0}, {1, 1, 1}, {0, 0, 1}}),
+        Matrix<int>({{0, 1, 0}, {0, 1, 0}, {1, 1, 0}})  ,
     }},
     {L_block, {
         Matrix<int>({{0, 0, 1}, {1, 1, 1}, {0, 0, 0}}),
@@ -51,7 +51,7 @@ const std::map<TetrominoType, std::vector<Matrix<int>>> Tetrominos = {
         Matrix<int>({{0, 1, 1}, {1, 1, 0}, {0, 0, 0}}),
         Matrix<int>({{0, 1, 0}, {0, 1, 1}, {0, 0, 1}}),
         Matrix<int>({{0, 0, 0}, {0, 1, 1}, {1, 1, 0}}),
-        Matrix<int>({{1, 0, 0}, {1, 1, 0}, {1, 0, 0}}),
+        Matrix<int>({{1, 0, 0}, {1, 1, 0}, {0, 1, 0}}),
     }},
     {Z_block, {
         Matrix<int>({{1, 1, 0}, {0, 1, 1}, {0, 0, 0}}),
