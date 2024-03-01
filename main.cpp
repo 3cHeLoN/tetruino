@@ -12,10 +12,10 @@
 #include "tetromino_factory.h"
 #include "tetromino.h"
 
-#define INITIAL_REPEAT_MS  40
+#define INITIAL_REPEAT_MS  30
 #define SECOND_REPEAT_MS 8
 
- typedef std::chrono::high_resolution_clock Clock;
+typedef std::chrono::high_resolution_clock Clock;
 auto lastUpdateTime = Clock::now();
 bool initialRepeating = false;
 bool secondaryRepeating = false;
@@ -26,7 +26,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
     auto screen_manager = ScreenManager(10, 20);
     auto game = Game();
-
     std::cout << "TETRIS!" << '\n';
 
     std::map<int, TetrominoType> tetrindex =
@@ -46,6 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     SDL_Event e;
     while(!game_over)
     {
+        auto t1 = Clock::now();
         while (SDL_PollEvent(&e))
         {
             switch (e.type)
@@ -55,6 +55,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     game_over = true;
                     break;
                 case SDL_KEYDOWN:
+                    if (e.key.repeat > 0)
+                    {
+                        break;
+                    }
                     // First time?
                     if (!initialRepeating && !secondaryRepeating)
                     {
@@ -66,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     repeat_condition = (initialRepeating & (lastKeyRepeatTime > INITIAL_REPEAT_MS) || (secondaryRepeating & (lastKeyRepeatTime > SECOND_REPEAT_MS)));
                     if (repeat_condition)
                     {
-
+                        std::cout << "Repeating, last time " << lastKeyRepeatTime << '\n';
                         initialRepeating = false;
                         lastKeyRepeat = Clock::now();
                         switch (e.key.keysym.sym) {
@@ -86,19 +90,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                                 break;
                         }
                     }
-                    break;
-                case SDL_KEYUP:
-                    std::cout << "Key up" << '\n';
-                    // Before repeat?
-                    if (!secondaryRepeating)
+                    else
                     {
                         switch (e.key.keysym.sym) {
                             case SDLK_UP:
                             case SDLK_s:
-                                printf("Rotate!\n");
+                                printf("Go down!\n");
                                 game.rotate(true);
                                 break;
                             case SDLK_a:
+                                printf("Go down!\n");
                                 game.rotate(false);
                                 break;
                             case SDLK_DOWN:
@@ -106,17 +107,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                                 game.move_down();
                                 break;
                             case SDLK_LEFT:
-                                printf("Go left!\n");
+                                printf("Left key pressed!\n");
                                 game.move_left();
                                 break;
                             case SDLK_RIGHT:
-                                printf("Go right!\n");
+                                printf("Right key pressed!\n");
                                 game.move_right();
                                 break;
                             default:
                                 break;
                         }
                     }
+                    break;
+                case SDL_KEYUP:
+                    std::cout << "Key up" << '\n';
                     initialRepeating = false;
                     secondaryRepeating = false;
                     break;
@@ -125,15 +129,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             }
         }
 
+        auto t2 = Clock::now();
+
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+        if (duration.count() > 10)
+        {
+            std::cout << "Input handling took " << duration.count() << " milliseconds" << '\n';
+        }
+
         // Screen update.
         auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - lastUpdateTime);
-        if (time_elapsed.count() >= 16)
+        if (time_elapsed.count() >= 1)
         {
             // TODO: Should this be updated more frequently?
+            auto t1 = Clock::now();
             game_over = !game.update();
             screen_manager.draw(game.board);
             screen_manager.draw(game.tetromino);
             screen_manager.show();
+            auto t2 = Clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1);
 
             lastUpdateTime = Clock::now();
         }
