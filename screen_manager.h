@@ -1,6 +1,6 @@
 #pragma once
 
-#define TILE_SIZE 40
+#define TILE_SIZE 35
 #define BORDER_SIZE 2
 
 #include <SDL2/SDL.h>

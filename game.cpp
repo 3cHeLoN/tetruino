@@ -22,6 +22,8 @@ Game::Game()
     factory = TetrominoFactory();
     current_state = SpawningState;
     last_move = Clock::now();
+    last_clear = Clock::now();
+    clear_column = 4;
 }
 
 bool Game::update()
@@ -55,9 +57,46 @@ bool Game::update()
             break;
         case CollidedState:
             success = board.place(tetromino);
-            board.check_lines();
+            full_lines = board.check_lines();
+            if (m_line_count > level * 10)
+            {
+                level++;
+            }
+
+            current_state = full_lines.size() > 0 ? ClearingLinesState : SpawningState;
+            break;
+        case ClearingLinesState:
+            // move tetromino out of sight
+            tetromino.set_position(-4, (int)(board.width / 2) - 1);
+            duration = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - last_clear);
+
+            if (duration.count() > CLEAR_MS)
+            {
+                for (int line : full_lines)
+                {
+                    board.clear_block(line, clear_column);
+                    board.clear_block(line, board.width - clear_column - 1);
+                }
+
+                last_clear = Clock::now();
+                clear_column--;
+                if (clear_column < 0)
+                {
+                    clear_column = board.width / 2 - 1;
+                    current_state = ShrinkingBoardState;
+                }
+                m_updated = true;
+            }
+            break;
+        case ShrinkingBoardState:
+            // refill empty lines
+            for (int line : full_lines)
+            {
+                board.fill_line(line);
+            }
+            board.clear_lines();
             current_state = SpawningState;
-            unset_update();
+            m_updated = true;
             break;
     }
 

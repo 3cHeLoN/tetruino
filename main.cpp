@@ -12,7 +12,7 @@
 #include "tetromino.h"
 
 #define REPEAT_MS 50
-#define INITIAL_REPEAT_MS  250
+#define INITIAL_REPEAT_MS  150
 
 typedef std::chrono::high_resolution_clock Clock;
 auto lastUpdateTime = Clock::now();
@@ -20,26 +20,35 @@ auto lastKeyRepeat = Clock::now();
 auto game_start = Clock::now();
 int repaints = 0;
 
-bool DOWN_PRESSED = false;
-bool LEFT_PRESSED = false;
-bool RIGHT_PRESSED = false;
-bool UP_PRESSED = false;
-bool S_PRESSED = false;
-bool A_PRESSED = false;
 
-void unset_keys()
+std::map<SDL_Keycode, bool> key_pressed_map =
 {
-    DOWN_PRESSED = false;
-    LEFT_PRESSED = false;
-    RIGHT_PRESSED = false;
-    UP_PRESSED = false;
-    S_PRESSED = false;
-    A_PRESSED = false;
-}
+    {SDLK_DOWN, false},
+    {SDLK_UP, false},
+    {SDLK_LEFT, false},
+    {SDLK_RIGHT, false},
+    {SDLK_a, false},
+    {SDLK_s, false},
+    {SDLK_SPACE, false},
+};
+
 
 int number_of_pressed_keys()
 {
-    return DOWN_PRESSED + LEFT_PRESSED + RIGHT_PRESSED + UP_PRESSED + S_PRESSED + A_PRESSED;
+    int num_keys = 0;
+    for (auto &pair : key_pressed_map)
+    {
+        num_keys += pair.second;
+    }
+    return num_keys;
+}
+
+void unset_keys()
+{
+    for (auto &pair : key_pressed_map)
+    {
+        pair.second = false;
+    }
 }
 
 int main(int argc, char **argv)
@@ -68,62 +77,14 @@ int main(int argc, char **argv)
                     {
                         break;
                     }
-                    std::cout << "Key pressed" << '\n';
+                    // std::cout << "Key pressed" << '\n';
                     keypressed = true;
-
-                    switch (e.key.keysym.sym)
-                    {
-                        case SDLK_UP:
-                            UP_PRESSED = true;
-                            break;
-                        case SDLK_DOWN:
-
-                            DOWN_PRESSED = true;
-                            break;
-                        case SDLK_LEFT:
-
-                            LEFT_PRESSED = true;
-                            break;
-                        case SDLK_RIGHT:
-
-                            RIGHT_PRESSED = true;
-                            break;
-                        case SDLK_a:
-                            A_PRESSED = true;
-                            break;
-                        case SDLK_s:
-                            S_PRESSED = true;
-                            break;
-                    }
+                    key_pressed_map[e.key.keysym.sym] = true;
                     break;
                 case SDL_KEYUP:
-                    std::cout << "Key released" << '\n';
-
-                    switch (e.key.keysym.sym)
-                    {
-                        case SDLK_UP:
-                            UP_PRESSED = false;
-                            break;
-                        case SDLK_DOWN:
-
-                            DOWN_PRESSED = false;
-                            break;
-                        case SDLK_LEFT:
-
-                            LEFT_PRESSED = false;
-                            break;
-                        case SDLK_RIGHT:
-
-                            RIGHT_PRESSED = false;
-                            break;
-                        case SDLK_a:
-                            A_PRESSED = false;
-                            break;
-                        case SDLK_s:
-                            S_PRESSED = false;
-                            break;
-                    }
-                    
+                    // std::cout << "Key released" << '\n';
+                    key_pressed_map[e.key.keysym.sym] = false;
+                                        
                     if (number_of_pressed_keys() == 0)
                     {
                         repeat = false;
@@ -138,16 +99,16 @@ int main(int argc, char **argv)
         if (keypressed)
         {
             // Handle non-repeatable keys first:
-            if (UP_PRESSED | S_PRESSED)
+            if (key_pressed_map[SDLK_UP] | key_pressed_map[SDLK_s])
             {
                 game.rotate(ClockWise);
-                UP_PRESSED = false;
-                S_PRESSED = false;
+                key_pressed_map[SDLK_UP] = false;
+                key_pressed_map[SDLK_s] = false;
             }
-            if (A_PRESSED)
+            if (key_pressed_map[SDLK_a])
             {
                 game.rotate(CounterClockWise);
-                A_PRESSED = false;
+                key_pressed_map[SDLK_a] = false;
             }
 
             auto polltime = Clock::now();
@@ -160,15 +121,15 @@ int main(int argc, char **argv)
                 {
                     repeat_ms = REPEAT_MS;
                 }
-                if (LEFT_PRESSED)
+                if (key_pressed_map[SDLK_LEFT])
                 {
                     game.move(DirectionLeft);
                 }
-                if (RIGHT_PRESSED)
+                if (key_pressed_map[SDLK_RIGHT])
                 {
                     game.move(DirectionRight);
                 }
-                if (DOWN_PRESSED)
+                if (key_pressed_map[SDLK_DOWN])
                 {
                     game.move(DirectionDown);
                 }
@@ -178,7 +139,7 @@ int main(int argc, char **argv)
 
         // Screen update.
         auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - lastUpdateTime);
-        if (time_elapsed.count() >= 1)
+        if (time_elapsed.count() >= 16)
         {
             // TODO: Should this be updated more frequently?
             auto success = game.update();
@@ -200,7 +161,13 @@ int main(int argc, char **argv)
             repaints++;
 
             auto gametime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - game_start).count();
-            std::cout << "Average repaints: " << repaints / (double)(gametime / 1000.0) << " per second" << '\n';
+            // std::cout << "Average repaints: " << repaints / (double)(gametime / 1000.0) << " per second" << '\n';
+            if (gametime > 4000)
+            {
+                game_start = Clock::now();
+                repaints = 0;
+            }
+
         }
 
         SDL_Delay(1);

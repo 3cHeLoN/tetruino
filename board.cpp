@@ -1,3 +1,4 @@
+#include <bits/stdc++.h>
 #include "board.h"
 
 Board::Board()
@@ -12,6 +13,11 @@ Board::Board(int rows, int cols)
     width = cols;
     height = rows;
     m_matrix = Matrix<int>(rows, cols);
+}
+
+void Board::clear_block(int row, int col)
+{
+    m_matrix(row, col) = 0;
 }
 
 int Board::get_block(int row, int col)
@@ -42,7 +48,7 @@ bool Board::place(Tetromino &tetromino)
                 return false;
             }
 
-            std::cout << "Writing to row/col " << row_index << "/" << col_index << '\n';
+            // std::cout << "Writing to row/col " << row_index << "/" << col_index << '\n';
             m_matrix(row_index, col_index) = tetromino(row_local, col_local) * tetromino.get_type();
         }
     }
@@ -79,11 +85,6 @@ bool Board::check_block(Tetromino &tetromino)
             int row_local = row_index - row;
             int col_local = col_index - col;
 
-            if (row_index < 0)
-            {
-                continue;
-            }
-
             if (tetromino(row_local, col_local) == 0)
             {
                 continue;
@@ -93,6 +94,11 @@ bool Board::check_block(Tetromino &tetromino)
             if ((row_index >= height || col_index >= width || col_index < 0))
             {
                 return false;
+            }
+
+            if (row_index < 0)
+            {
+                continue;
             }
 
             // Overlap?
@@ -105,7 +111,37 @@ bool Board::check_block(Tetromino &tetromino)
     return true;
 }
 
-void Board::check_lines()
+std::vector<int> Board::check_lines()
+{
+    int line_count = 0;
+    auto full_lines = std::vector<int>(); 
+
+    int new_row_index = m_matrix.numRows() - 1;
+    for (int row_index = m_matrix.numRows() - 1; row_index >= 0; row_index--)
+    {
+        bool row_is_full = true;
+        for (int col_index = 0; col_index < m_matrix.numCols(); col_index++)
+        {
+            if (m_matrix(row_index, col_index) == 0)
+            {
+                row_is_full = false;
+                break;
+            }
+        }
+
+        if (row_is_full)
+        {
+            full_lines.push_back(row_index);
+        }
+
+        
+    }
+
+    return full_lines;
+}
+
+
+void Board::clear_lines()
 {
     int new_row_index = m_matrix.numRows() - 1;
     for (int row_index = m_matrix.numRows() - 1; row_index >= 0; row_index--)
@@ -132,5 +168,14 @@ void Board::check_lines()
             }
             new_row_index--;
         }
+    }
+}
+
+
+void Board::fill_line(int row)
+{
+    for (int col = 0; col < width; col++)
+    {
+        m_matrix(row, col) = 1;
     }
 }

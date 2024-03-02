@@ -13,9 +13,11 @@ class Board
         Board(int rows, int cols);
         bool check_block(Tetromino &tetromino);
         Matrix<int> get_slice(int row, int col, int width, int height);
-        void set_block(int row, int col);
+        void clear_block(int row, int col);
         int get_block(int row, int col);
+        void clear_lines();
         bool place(Tetromino &tetromino);
         void show();
-        void check_lines();
+        std::vector<int> check_lines();
+        void fill_line(int row);
 };
