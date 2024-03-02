@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <Windows.h>
 #include <random>
 #include <map>
 #include <chrono>
@@ -13,7 +12,7 @@
 #include "tetromino.h"
 
 #define REPEAT_MS 50
-#define INITIAL_REPEAT_MS  300
+#define INITIAL_REPEAT_MS  250
 
 typedef std::chrono::high_resolution_clock Clock;
 auto lastUpdateTime = Clock::now();
@@ -26,8 +25,22 @@ bool UP_PRESSED = false;
 bool S_PRESSED = false;
 bool A_PRESSED = false;
 
-// // int main(int argc, char **argv)
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+void unset_keys()
+{
+    DOWN_PRESSED = false;
+    LEFT_PRESSED = false;
+    RIGHT_PRESSED = false;
+    UP_PRESSED = false;
+    S_PRESSED = false;
+    A_PRESSED = false;
+}
+
+int number_of_pressed_keys()
+{
+    return DOWN_PRESSED + LEFT_PRESSED + RIGHT_PRESSED + UP_PRESSED + S_PRESSED + A_PRESSED;
+}
+
+int main(int argc, char **argv)
 {
     auto screen_manager = ScreenManager(10, 20);
     auto game = Game();
@@ -57,7 +70,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             switch (e.type)
             {
                 case SDL_QUIT:
-                    std::cout << "Game OVER" << '\n';
                     game_over = true;
                     break;
                 case SDL_KEYDOWN:
@@ -65,27 +77,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     {
                         break;
                     }
-                    std::cout << "KEY DOWN" << '\n';
+                    std::cout << "Key pressed" << '\n';
                     keypressed = true;
 
                     switch (e.key.keysym.sym)
                     {
                         case SDLK_UP:
-                            std::cout << "UP KEY" << '\n';
                             UP_PRESSED = true;
                             break;
                         case SDLK_DOWN:
-                            std::cout << "DOWN KEY" << '\n';
 
                             DOWN_PRESSED = true;
                             break;
                         case SDLK_LEFT:
-                            std::cout << "LEFT KEY" << '\n';
 
                             LEFT_PRESSED = true;
                             break;
                         case SDLK_RIGHT:
-                            std::cout << "RIGHT KEY" << '\n';
 
                             RIGHT_PRESSED = true;
                             break;
@@ -98,16 +106,40 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                     }
                     break;
                 case SDL_KEYUP:
-                    repeat = false;
-                    keypressed = false;
-                    A_PRESSED = false;
-                    S_PRESSED = false;
-                    UP_PRESSED = false;
-                    DOWN_PRESSED = false;
-                    LEFT_PRESSED = false;
-                    RIGHT_PRESSED = false;
-                    firstpress = true;
-                    repeat_ms = INITIAL_REPEAT_MS;
+                    std::cout << "Key released" << '\n';
+
+                    switch (e.key.keysym.sym)
+                    {
+                        case SDLK_UP:
+                            UP_PRESSED = false;
+                            break;
+                        case SDLK_DOWN:
+
+                            DOWN_PRESSED = false;
+                            break;
+                        case SDLK_LEFT:
+
+                            LEFT_PRESSED = false;
+                            break;
+                        case SDLK_RIGHT:
+
+                            RIGHT_PRESSED = false;
+                            break;
+                        case SDLK_a:
+                            A_PRESSED = false;
+                            break;
+                        case SDLK_s:
+                            S_PRESSED = false;
+                            break;
+                    }
+                    
+                    if (number_of_pressed_keys() == 0)
+                    {
+                        repeat = false;
+                        keypressed = false;
+                        firstpress = true;
+                        repeat_ms = INITIAL_REPEAT_MS;
+                    }
                     break;
             }
         }
@@ -158,7 +190,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         if (time_elapsed.count() >= 1)
         {
             // TODO: Should this be updated more frequently?
-            game_over = !game.update();
+            auto success = game.update();
+            if (!success)
+            {
+                game_over = true;
+            }
             screen_manager.draw(game.board);
             screen_manager.draw(game.tetromino);
             screen_manager.show();

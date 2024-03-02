@@ -35,12 +35,10 @@ bool Game::update()
                     tetromino.increase_row(false);
                     current_state = CollidedState;
                 }
-                std::cout << "Moved down" << '\n';
                 last_move = Clock::now();
             }
             break;
         case CollidedState:
-            std::cout << "Collided!" << '\n';
             success = board.place(tetromino);
             board.check_lines();
             current_state = SpawningState;
