@@ -17,6 +17,8 @@
 typedef std::chrono::high_resolution_clock Clock;
 auto lastUpdateTime = Clock::now();
 auto lastKeyRepeat = Clock::now();
+auto game_start = Clock::now();
+int repaints = 0;
 
 bool DOWN_PRESSED = false;
 bool LEFT_PRESSED = false;
@@ -184,11 +186,21 @@ int main(int argc, char **argv)
             {
                 game_over = true;
             }
+        }
+
+        if (game.has_update())
+        {
             screen_manager.draw(game.board);
             screen_manager.draw(game.tetromino);
             screen_manager.show();
             
             lastUpdateTime = Clock::now();
+            game.unset_update();
+
+            repaints++;
+
+            auto gametime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - game_start).count();
+            std::cout << "Average repaints: " << repaints / (double)(gametime / 1000.0) << " per second" << '\n';
         }
 
         SDL_Delay(1);

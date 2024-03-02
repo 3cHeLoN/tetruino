@@ -20,10 +20,13 @@ class Game
         using TimePoint = std::chrono::time_point<Clock>;
         TimePoint last_move;
         GameState current_state;
+        bool m_updated = true;
         TetrominoFactory factory;
-        std::vector<int> line_rates = {600, 800, 500, 300, 100, 80, 50, 20};
+        std::vector<int> line_rates = {1000, 793, 617, 472, 355, 262, 189, 134, 93, 64, 42, 28, 18, 11, 7};
     public:
         Game();
+        bool has_update() { return m_updated; };
+        void unset_update() { m_updated = false; };
         bool update();
         void draw(ScreenManager manager);
         int level;

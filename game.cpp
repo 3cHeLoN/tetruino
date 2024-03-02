@@ -17,7 +17,7 @@ std::map<RotationDirection, RotationDirection> reverse_rotation =
 
 Game::Game()
 {
-    level = 0;
+    level = 14;
     board = Board(20, 10);
     factory = TetrominoFactory();
     current_state = SpawningState;
@@ -37,6 +37,7 @@ bool Game::update()
             // Set initial position.
             tetromino.set_position(-2, (int)(board.width / 2) - 1);
             current_state = MovingState;
+            unset_update();
             break;
         case MovingState:
             duration = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - last_move);
@@ -56,6 +57,7 @@ bool Game::update()
             success = board.place(tetromino);
             board.check_lines();
             current_state = SpawningState;
+            unset_update();
             break;
     }
 
@@ -72,6 +74,7 @@ bool Game::move(Direction direction)
         tetromino.move(reverse_direction.at(direction));
     }
 
+    m_updated = success;
     return success;
 }
 
@@ -85,5 +88,6 @@ bool Game::rotate(RotationDirection direction)
         tetromino.rotate(reverse_rotation.at(direction));
     }
 
+    m_updated = success;
     return success;
 }
