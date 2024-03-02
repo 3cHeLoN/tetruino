@@ -33,14 +33,16 @@ void Tetromino::set_position(int row, int col)
     m_col = col;
 }
 
-void Tetromino::rotate_clockwise()
+void Tetromino::rotate(RotationDirection direction)
 {
-    m_rotation = (m_rotation + 1) % 4;
-}
-
-void Tetromino::rotate_counter_clockwise()
-{
-    m_rotation = (4 + m_rotation - 1) % 4;
+    switch(direction)
+    {
+        case ClockWise:
+            m_rotation = (m_rotation + 1) % 4;
+            break;
+        case CounterClockWise:
+            m_rotation = (4 + m_rotation - 1) % 4;
+    }
 }
 
 void Tetromino::print()
@@ -56,26 +58,21 @@ int& Tetromino::operator()(int row, int col) {
     return m_matrices[m_rotation](row, col);
 }
 
-void Tetromino::increase_col(bool direction)
+void Tetromino::move(Direction direction)
 {
-    if (direction)
+    switch(direction)
     {
-        m_col++;
-    }
-    else
-    {
-        m_col--;
-    }
-}
-
-void Tetromino::increase_row(bool direction)
-{
-    if (direction)
-    {
-        m_row++;
-    }
-    else
-    {
-        m_row--;
+        case DirectionLeft:
+            m_col--;
+            break;
+        case DirectionRight:
+            m_col++;
+            break;
+        case DirectionDown:
+            m_row++;
+            break;
+        case DirectionUp:
+            m_row--;
+            break;
     }
 }

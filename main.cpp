@@ -46,17 +46,6 @@ int main(int argc, char **argv)
     auto game = Game();
     std::cout << "TETRIS!" << '\n';
 
-    std::map<int, TetrominoType> tetrindex =
-    {
-        {0, I_block},
-        {1, O_block},
-        {2, T_block},
-        {3, J_block},
-        {4, L_block},
-        {5, S_block},
-        {6, Z_block},
-    };
-
     bool game_over = false;
     int lastKeyRepeatTime;
     bool repeat, keypressed = false;
@@ -149,13 +138,13 @@ int main(int argc, char **argv)
             // Handle non-repeatable keys first:
             if (UP_PRESSED | S_PRESSED)
             {
-                game.rotate(true);
+                game.rotate(ClockWise);
                 UP_PRESSED = false;
                 S_PRESSED = false;
             }
             if (A_PRESSED)
             {
-                game.rotate(false);
+                game.rotate(CounterClockWise);
                 A_PRESSED = false;
             }
 
@@ -171,15 +160,15 @@ int main(int argc, char **argv)
                 }
                 if (LEFT_PRESSED)
                 {
-                    game.move_left();
+                    game.move(DirectionLeft);
                 }
                 if (RIGHT_PRESSED)
                 {
-                    game.move_right();
+                    game.move(DirectionRight);
                 }
                 if (DOWN_PRESSED)
                 {
-                    game.move_down();
+                    game.move(DirectionDown);
                 }
                 firstpress = false;
             }

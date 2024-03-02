@@ -3,6 +3,7 @@
 #include <map>
 
 #include "color.h"
+#include "motions.h"
 #include "matrix.h"
 
 enum TetrominoType
@@ -61,16 +62,6 @@ const std::map<TetrominoType, std::vector<Matrix<int>>> Tetrominos = {
     }},
 };
 
-// const std::map<TetrominoType, Color> colormap
-// {
-//     {I_block, Color(253, 63, 89)},
-//     {O_block, Color(255, 200, 46)},
-//     {T_block, Color(254, 251, 52)},
-//     {J_block, Color(83, 218, 63)},
-//     {L_block, Color(1, 237, 250)},
-//     {S_block, Color(234, 20, 28)},
-//     {Z_block, Color(254, 72, 128)},
-// };
 
 const std::map<TetrominoType, Color> colormap
 {
@@ -100,13 +91,11 @@ class Tetromino
         TetrominoType get_type() { return m_type; };
         int get_row() { return m_row; };
         int get_col() { return m_col; };
-        void increase_row(bool direction);
-        void increase_col(bool direction);
+        void move(Direction direction);
         Color get_color() { return m_color; };
         void set_color(Color color);
         void set_position(int row, int col);
-        void rotate_clockwise();
-        void rotate_counter_clockwise();
+        void rotate(RotationDirection direction);
         void print();
         int operator()(int row, int col) const;
         int& operator()(int row, int col);

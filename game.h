@@ -29,8 +29,6 @@ class Game
         int level;
         Board board;
         Tetromino tetromino;
-        void move_left();
-        void move_right();
-        void move_down();
-        void rotate(bool direction);
+        bool move(Direction direction);
+        bool rotate(RotationDirection direction);
 };

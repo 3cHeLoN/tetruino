@@ -1,4 +1,19 @@
 #include "game.h"
+#include "motions.h"
+
+std::map<Direction, Direction> reverse_direction =
+{
+    {DirectionLeft, DirectionRight},
+    {DirectionRight, DirectionLeft},
+    {DirectionUp, DirectionDown},
+    {DirectionDown, DirectionUp},
+};
+
+std::map<RotationDirection, RotationDirection> reverse_rotation =
+{
+    {ClockWise, CounterClockWise},
+    {CounterClockWise, ClockWise},
+};
 
 Game::Game()
 {
@@ -12,6 +27,7 @@ Game::Game()
 bool Game::update()
 {
     bool success = true;
+    bool can_move;
     std::chrono::milliseconds duration;
 
     switch (current_state)
@@ -26,15 +42,13 @@ bool Game::update()
             duration = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - last_move);
             if (duration.count() > line_rates[level])
             {
-                tetromino.increase_row(true);
+                can_move = move(DirectionDown);
 
-                // Can it move?
-                if (!board.check_block(tetromino))
+                if (!can_move)
                 {
-                    // No? Then collided.
-                    tetromino.increase_row(false);
                     current_state = CollidedState;
                 }
+
                 last_move = Clock::now();
             }
             break;
@@ -48,50 +62,28 @@ bool Game::update()
     return success;
 }
 
-void Game::move_left()
+bool Game::move(Direction direction)
 {
-    tetromino.increase_col(false);
+    bool success = true;
+    tetromino.move(direction);
     if (!board.check_block(tetromino))
     {
-        // undo
-        tetromino.increase_col(true);
+        success = false;
+        tetromino.move(reverse_direction.at(direction));
     }
+
+    return success;
 }
 
-
-void Game::move_right()
+bool Game::rotate(RotationDirection direction)
 {
-    tetromino.increase_col(true);
+    bool success = true;
+    tetromino.rotate(direction);
     if (!board.check_block(tetromino))
     {
-        // undo
-        tetromino.increase_col(false);
+        success = false;
+        tetromino.rotate(reverse_rotation.at(direction));
     }
-}
 
-void Game::move_down()
-{
-    tetromino.increase_row(true);
-    if (!board.check_block(tetromino))
-    {
-        // undo
-        tetromino.increase_row(false);
-    }
-}
-
-
-void Game::rotate(bool direction)
-{
-    if (direction)
-    {
-        tetromino.rotate_clockwise();
-    }
-    else
-    {
-        tetromino.rotate_counter_clockwise();
-    }
-    if (!board.check_block(tetromino))
-    {
-        direction ? tetromino.rotate_counter_clockwise() : tetromino.rotate_clockwise();
-    }
+    return success;
 }
