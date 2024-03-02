@@ -17,7 +17,7 @@ std::map<RotationDirection, RotationDirection> reverse_rotation =
 
 Game::Game()
 {
-    level = 14;
+    level = 0;
     board = Board(20, 10);
     factory = TetrominoFactory();
     current_state = SpawningState;
