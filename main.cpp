@@ -110,6 +110,11 @@ int main(int argc, char **argv)
                 game.rotate(CounterClockWise);
                 key_pressed_map[SDLK_a] = false;
             }
+            if (key_pressed_map[SDLK_SPACE])
+            {
+                game.harddrop();
+                key_pressed_map[SDLK_SPACE] = false;
+            }
 
             auto polltime = Clock::now();
             auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(polltime - lastKeyRepeat);

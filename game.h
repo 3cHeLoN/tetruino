@@ -41,5 +41,6 @@ class Game
         Board board;
         Tetromino tetromino;
         bool move(Direction direction);
+        void harddrop();
         bool rotate(RotationDirection direction);
 };

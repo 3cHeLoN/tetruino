@@ -130,3 +130,11 @@ bool Game::rotate(RotationDirection direction)
     m_updated = success;
     return success;
 }
+
+void Game::harddrop()
+{
+    while (move(DirectionDown))
+    {}
+    m_updated = true;
+    current_state = CollidedState;
+}
