@@ -4,6 +4,9 @@
 #include <random>
 #include <map>
 #include <chrono>
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 #include "board.h"
 #include "game.h"
@@ -51,7 +54,11 @@ void unset_keys()
     }
 }
 
+#ifdef _WIN32
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#elif __linux__
 int main(int argc, char **argv)
+#endif
 {
     auto screen_manager = ScreenManager(10, 20);
     auto game = Game();
