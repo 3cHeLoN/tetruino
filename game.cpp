@@ -93,6 +93,7 @@ bool Game::update()
             }
             break;
         case ShrinkingBoardState:
+            // TODO: Could this be more elegant?
             // refill empty lines
             for (int line : full_lines)
             {

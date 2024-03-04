@@ -22,7 +22,11 @@ auto lastUpdateTime = Clock::now();
 auto lastKeyRepeat = Clock::now();
 auto game_start = Clock::now();
 int repaints = 0;
-
+bool game_over = false;
+bool keypressed = false;
+bool repeat = false;
+bool firstpress = true;
+int repeat_ms = INITIAL_REPEAT_MS;
 
 std::map<SDL_Keycode, bool> key_pressed_map =
 {
@@ -54,6 +58,87 @@ void unset_keys()
     }
 }
 
+void handle_input(Game &game)
+{
+    SDL_Event e;
+    while (SDL_PollEvent(&e))
+    {
+        switch (e.type)
+        {
+            case SDL_QUIT:
+                game_over = true;
+                break;
+            case SDL_KEYDOWN:
+                if (e.key.repeat > 0)
+                {
+                    break;
+                }
+                // std::cout << "Key pressed" << '\n';
+                keypressed = true;
+                key_pressed_map[e.key.keysym.sym] = true;
+                break;
+            case SDL_KEYUP:
+                // std::cout << "Key released" << '\n';
+                key_pressed_map[e.key.keysym.sym] = false;
+
+                if (number_of_pressed_keys() == 0)
+                {
+                    repeat = false;
+                    keypressed = false;
+                    firstpress = true;
+                    repeat_ms = INITIAL_REPEAT_MS;
+                }
+                break;
+        }
+    }
+
+    if (keypressed)
+    {
+        // Handle non-repeatable keys first:
+        if (key_pressed_map[SDLK_UP] | key_pressed_map[SDLK_s])
+        {
+            game.rotate(ClockWise);
+            key_pressed_map[SDLK_UP] = false;
+            key_pressed_map[SDLK_s] = false;
+        }
+        if (key_pressed_map[SDLK_a])
+        {
+            game.rotate(CounterClockWise);
+            key_pressed_map[SDLK_a] = false;
+        }
+        if (key_pressed_map[SDLK_SPACE])
+        {
+            game.harddrop();
+            key_pressed_map[SDLK_SPACE] = false;
+        }
+
+        auto polltime = Clock::now();
+        auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(polltime - lastKeyRepeat);
+        if (time_elapsed.count() > repeat_ms || firstpress)
+        {
+            lastKeyRepeat = polltime;
+
+            if (!firstpress)
+            {
+                repeat_ms = REPEAT_MS;
+            }
+            if (key_pressed_map[SDLK_LEFT])
+            {
+                game.move(DirectionLeft);
+            }
+            if (key_pressed_map[SDLK_RIGHT])
+            {
+                game.move(DirectionRight);
+            }
+            if (key_pressed_map[SDLK_DOWN])
+            {
+                game.move(DirectionDown);
+            }
+            firstpress = false;
+        }
+    }
+}
+
 #ifdef _WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #elif __linux__
@@ -64,90 +149,9 @@ int main(int argc, char **argv)
     auto game = Game();
     std::cout << "TETRIS!" << '\n';
 
-    bool game_over = false;
-    int lastKeyRepeatTime;
-    bool repeat, keypressed = false;
-    bool firstpress = true;
-    auto repeat_ms = INITIAL_REPEAT_MS;
-    SDL_Event e;
     while(!game_over)
     {
-        while (SDL_PollEvent(&e))
-        {
-            switch (e.type)
-            {
-                case SDL_QUIT:
-                    game_over = true;
-                    break;
-                case SDL_KEYDOWN:
-                    if (e.key.repeat > 0)
-                    {
-                        break;
-                    }
-                    // std::cout << "Key pressed" << '\n';
-                    keypressed = true;
-                    key_pressed_map[e.key.keysym.sym] = true;
-                    break;
-                case SDL_KEYUP:
-                    // std::cout << "Key released" << '\n';
-                    key_pressed_map[e.key.keysym.sym] = false;
-                                        
-                    if (number_of_pressed_keys() == 0)
-                    {
-                        repeat = false;
-                        keypressed = false;
-                        firstpress = true;
-                        repeat_ms = INITIAL_REPEAT_MS;
-                    }
-                    break;
-            }
-        }
-
-        if (keypressed)
-        {
-            // Handle non-repeatable keys first:
-            if (key_pressed_map[SDLK_UP] | key_pressed_map[SDLK_s])
-            {
-                game.rotate(ClockWise);
-                key_pressed_map[SDLK_UP] = false;
-                key_pressed_map[SDLK_s] = false;
-            }
-            if (key_pressed_map[SDLK_a])
-            {
-                game.rotate(CounterClockWise);
-                key_pressed_map[SDLK_a] = false;
-            }
-            if (key_pressed_map[SDLK_SPACE])
-            {
-                game.harddrop();
-                key_pressed_map[SDLK_SPACE] = false;
-            }
-
-            auto polltime = Clock::now();
-            auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(polltime - lastKeyRepeat);
-            if (time_elapsed.count() > repeat_ms || firstpress)
-            {
-                lastKeyRepeat = polltime;
-
-                if (!firstpress)
-                {
-                    repeat_ms = REPEAT_MS;
-                }
-                if (key_pressed_map[SDLK_LEFT])
-                {
-                    game.move(DirectionLeft);
-                }
-                if (key_pressed_map[SDLK_RIGHT])
-                {
-                    game.move(DirectionRight);
-                }
-                if (key_pressed_map[SDLK_DOWN])
-                {
-                    game.move(DirectionDown);
-                }
-                firstpress = false;
-            }
-        }
+        handle_input(game);
 
         // Screen update.
         auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - lastUpdateTime);
@@ -187,14 +191,4 @@ int main(int argc, char **argv)
 
     std::cout << "GAME OVER!!!" << '\n';
     return 0;
-}
-
-
-
-void game()
-{
-    bool game_over = false;
-    while (!game_over)
-    {
-    }
 }
