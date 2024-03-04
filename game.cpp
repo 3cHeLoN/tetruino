@@ -58,16 +58,20 @@ bool Game::update()
         case CollidedState:
             success = board.place(tetromino);
             full_lines = board.check_lines();
+            m_line_count += full_lines.size();
+
             if (m_line_count > level * 10)
             {
                 level++;
+                std::cout << "Advancing to level " << level << "!" << '\n';
             }
 
             current_state = full_lines.size() > 0 ? ClearingLinesState : SpawningState;
             break;
         case ClearingLinesState:
             // move tetromino out of sight
-            tetromino.set_position(-4, (int)(board.width / 2) - 1);
+            // TODO: fix, ugly
+            tetromino.set_position(-1000, (int)(board.width / 2) - 1);
             duration = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - last_clear);
 
             if (duration.count() > CLEAR_MS)
