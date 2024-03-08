@@ -167,8 +167,7 @@ int main(int argc, char **argv)
 
         if (game.has_update())
         {
-            screen_manager.draw(game.board);
-            screen_manager.draw(game.tetromino);
+            game.draw(screen_manager);
             screen_manager.show();
             
             lastUpdateTime = Clock::now();

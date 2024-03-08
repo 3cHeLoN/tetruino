@@ -3,8 +3,10 @@
 #include <map>
 
 #include "color.h"
+#include "drawable.h"
 #include "motions.h"
 #include "matrix.h"
+#include "screen_manager.h"
 
 enum TetrominoType
 {
@@ -75,7 +77,7 @@ const std::map<TetrominoType, Color> colormap
 };
 
 
-class Tetromino
+class Tetromino : public Drawable
 {
     private:
         Color m_color;
@@ -99,4 +101,5 @@ class Tetromino
         void print();
         int operator()(int row, int col) const;
         int& operator()(int row, int col);
+        void draw(ScreenManager &manager) override;
 };

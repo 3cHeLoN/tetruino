@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
+
 #include "board.h"
+#include "screen_manager.h"
 
 Board::Board()
 {
@@ -177,5 +179,23 @@ void Board::fill_line(int row)
     for (int col = 0; col < width; col++)
     {
         m_matrix(row, col) = 1;
+    }
+}
+
+void Board::draw(ScreenManager &manager)
+{
+    manager.set_background(background_color);
+
+    for (int row_index = 0; row_index < height; row_index++)
+    {
+        for (int col_index = 0; col_index < width; col_index++)
+        {
+            if (get_block(row_index, col_index) != 0)
+            {
+                auto tetromino_type = (TetrominoType)get_block(row_index, col_index);
+                auto block_color = colormap.at(tetromino_type);
+                manager.drawBox(row_index, col_index, block_color);
+            }
+        }
     }
 }

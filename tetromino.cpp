@@ -76,3 +76,21 @@ void Tetromino::move(Direction direction)
             break;
     }
 }
+
+
+void Tetromino::draw(ScreenManager &manager)
+{
+    for (int row = m_row; row < m_row + height(); row++)
+    {
+        for (int col = m_col; col < m_col + width(); col++)
+        {
+            int row_local = row - m_row;
+            int col_local = col - m_col;
+
+            if ((*this)(row_local, col_local) > 0)
+            {
+                manager.drawBox(row, col, get_color());
+            }
+        }
+    }
+}

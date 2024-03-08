@@ -143,3 +143,11 @@ void Game::harddrop()
     m_updated = true;
     current_state = CollidedState;
 }
+
+void Game::draw(ScreenManager manager)
+{
+    manager.set_background(board.background_color);
+    manager.clear_screen();
+    board.draw(manager);
+    tetromino.draw(manager);
+}

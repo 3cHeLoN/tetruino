@@ -1,8 +1,5 @@
 #pragma once
 
-#define TILE_SIZE 35
-#define BORDER_SIZE 2
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
@@ -17,12 +14,16 @@ class ScreenManager
         int window_width, window_height;
         SDL_Window* window;
         SDL_Renderer* renderer;
-        void drawBox(int row, int col, Color color);
         void drawSquare(int row, int col, Color color, bool fill);
-    public:
+        int m_tile_size = 35;
         int m_rows, m_cols;
+    public:
+        void drawBox(int row, int col, Color color);
         ScreenManager(int width, int height);
-        void draw(Board &board);
-        void draw(Tetromino &tetromino);
+        void set_background(Color &color);
+        void clear_screen();
         void show();
+        int tile_size() { return m_tile_size; };
+        int width() { return window_width; };
+        int height() { return window_height; };
 };
