@@ -20,7 +20,7 @@
 typedef std::chrono::high_resolution_clock Clock;
 auto lastUpdateTime = Clock::now();
 auto lastKeyRepeat = Clock::now();
-auto game_start = Clock::now();
+
 int repaints = 0;
 bool game_over = false;
 bool keypressed = false;
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
             auto success = game.update();
             if (!success)
             {
-                game_over = true;
+                game.game_over();
             }
         }
 
@@ -172,17 +172,6 @@ int main(int argc, char **argv)
             
             lastUpdateTime = Clock::now();
             game.unset_update();
-
-            repaints++;
-
-            auto gametime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - game_start).count();
-            // std::cout << "Average repaints: " << repaints / (double)(gametime / 1000.0) << " per second" << '\n';
-            if (gametime > 4000)
-            {
-                game_start = Clock::now();
-                repaints = 0;
-            }
-
         }
 
         SDL_Delay(1);

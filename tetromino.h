@@ -65,17 +65,27 @@ const std::map<TetrominoType, std::vector<Matrix<int>>> Tetrominos = {
 };
 
 
+// const std::map<TetrominoType, Color> colormap
+// {
+//     {I_block, Color(251, 73, 52)},
+//     {O_block, Color(184, 187, 38)},
+//     {T_block, Color(250, 189, 47)},
+//     {J_block, Color(131, 165, 152)},
+//     {L_block, Color(211, 134, 155)},
+//     {S_block, Color(142, 192, 124)},
+//     {Z_block, Color(235, 219, 178)},
+// };
+
 const std::map<TetrominoType, Color> colormap
 {
-    {I_block, Color(251, 73, 52)},
-    {O_block, Color(184, 187, 38)},
-    {T_block, Color(250, 189, 47)},
-    {J_block, Color(131, 165, 152)},
-    {L_block, Color(211, 134, 155)},
-    {S_block, Color(142, 192, 124)},
-    {Z_block, Color(235, 219, 178)},
+    {I_block, Color(0, 255, 255)},
+    {O_block, Color(255, 255, 0)},
+    {T_block, Color(128, 0, 128)},
+    {J_block, Color(0, 255, 0)},
+    {L_block, Color(255, 0, 0)},
+    {S_block, Color(0, 0, 255)},
+    {Z_block, Color(255, 127, 0)},
 };
-
 
 class Tetromino : public Drawable
 {
@@ -83,11 +93,14 @@ class Tetromino : public Drawable
         Color m_color;
         int m_row, m_col;
         int m_rotation;
+        bool m_visible;
         std::vector<Matrix<int>> m_matrices;
         TetrominoType m_type;
     public:
         Tetromino();
         Tetromino(TetrominoType type);
+        void toggle_visible();
+        void set_visible(bool visible);
         int width() { return m_matrices[0].numCols(); };
         int height() { return m_matrices[0].numRows(); };
         TetrominoType get_type() { return m_type; };
