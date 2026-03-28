@@ -1,6 +1,6 @@
 .vscode/*
 *.out
 *.exe
-*.txt
 *.json
 tetris
+build/

@@ -59,34 +59,36 @@ namespace
       {Z_block, Color(255, 127, 0)},
   };
 
-  const std::map<TetrominoType, std::vector<Matrix<int>>> &tetrominos()
-  {
-    return g_Tetrominos;
-  }
+} // end anonymous namespace
 
-  const std::map<TetrominoType, Color> &tetromino_colormap()
-  {
-    return g_colormap;
-  }
+const std::map<TetrominoType, std::vector<Matrix<int>>> &tetrominos()
+{
+  return g_Tetrominos;
+}
 
-  Tetromino::Tetromino()
+const std::map<TetrominoType, Color> &tetromino_colormap()
+{
+  return g_colormap;
+}
+
+Tetromino::Tetromino()
   {
     m_type = I_block;
     m_visible = true;
     m_rotation = 0;
     // Create correctly sized rotation matrices.
-    m_matrices = Tetrominos.at(I_block);
+    m_matrices = tetrominos().at(I_block);
     set_position(0, 0);
     m_color = Color(255, 0, 0);
   }
 
-  Tetromino::Tetromino(TetrominoType type)
+Tetromino::Tetromino(TetrominoType type)
   {
     m_type = type;
     m_visible = true;
     m_rotation = 0;
     // Create correctly sized rotation matrices.
-    m_matrices = Tetrominos.at(type);
+    m_matrices = tetrominos().at(type);
     set_position(0, 0);
     m_color = Color(255, 0, 0);
   }
@@ -99,18 +101,18 @@ namespace
   //   m_visible = !m_visible;
   // }
 
-  void Tetromino::set_color(Color color)
+void Tetromino::set_color(Color color)
   {
     m_color = color;
   }
 
-  void Tetromino::set_position(int row, int col)
+void Tetromino::set_position(int row, int col)
   {
     m_row = row;
     m_col = col;
   }
 
-  void Tetromino::rotate(RotationDirection direction)
+void Tetromino::rotate(RotationDirection direction)
   {
     switch (direction)
     {
@@ -122,22 +124,22 @@ namespace
     }
   }
 
-  void Tetromino::print()
+void Tetromino::print()
   {
     m_matrices[m_rotation].print();
   }
 
-  int Tetromino::operator()(int row, int col) const
+int Tetromino::operator()(int row, int col) const
   {
     return m_matrices[m_rotation](row, col);
   }
 
-  int &Tetromino::operator()(int row, int col)
+int &Tetromino::operator()(int row, int col)
   {
     return m_matrices[m_rotation](row, col);
   }
 
-  void Tetromino::move(Direction direction)
+void Tetromino::move(Direction direction)
   {
     switch (direction)
     {
@@ -156,7 +158,7 @@ namespace
     }
   }
 
-  void Tetromino::draw(ScreenManager &manager)
+void Tetromino::draw(ScreenManager &manager)
   {
     if (!isVisible())
     {
