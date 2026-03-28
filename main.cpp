@@ -15,7 +15,7 @@
 #include "tetromino.h"
 
 #define REPEAT_MS 50
-#define INITIAL_REPEAT_MS  150
+#define INITIAL_REPEAT_MS 150
 
 typedef std::chrono::high_resolution_clock Clock;
 auto lastUpdateTime = Clock::now();
@@ -29,16 +29,15 @@ bool firstpress = true;
 int repeat_ms = INITIAL_REPEAT_MS;
 
 std::map<SDL_Keycode, bool> key_pressed_map =
-{
-    {SDLK_DOWN, false},
-    {SDLK_UP, false},
-    {SDLK_LEFT, false},
-    {SDLK_RIGHT, false},
-    {SDLK_a, false},
-    {SDLK_s, false},
-    {SDLK_SPACE, false},
+    {
+        {SDLK_DOWN, false},
+        {SDLK_UP, false},
+        {SDLK_LEFT, false},
+        {SDLK_RIGHT, false},
+        {SDLK_a, false},
+        {SDLK_s, false},
+        {SDLK_SPACE, false},
 };
-
 
 int number_of_pressed_keys()
 {
@@ -65,30 +64,30 @@ void handle_input(Game &game)
     {
         switch (e.type)
         {
-            case SDL_QUIT:
-                game_over = true;
+        case SDL_QUIT:
+            game_over = true;
+            break;
+        case SDL_KEYDOWN:
+            if (e.key.repeat > 0)
+            {
                 break;
-            case SDL_KEYDOWN:
-                if (e.key.repeat > 0)
-                {
-                    break;
-                }
-                // std::cout << "Key pressed" << '\n';
-                keypressed = true;
-                key_pressed_map[e.key.keysym.sym] = true;
-                break;
-            case SDL_KEYUP:
-                // std::cout << "Key released" << '\n';
-                key_pressed_map[e.key.keysym.sym] = false;
+            }
+            // std::cout << "Key pressed" << '\n';
+            keypressed = true;
+            key_pressed_map[e.key.keysym.sym] = true;
+            break;
+        case SDL_KEYUP:
+            // std::cout << "Key released" << '\n';
+            key_pressed_map[e.key.keysym.sym] = false;
 
-                if (number_of_pressed_keys() == 0)
-                {
-                    repeat = false;
-                    keypressed = false;
-                    firstpress = true;
-                    repeat_ms = INITIAL_REPEAT_MS;
-                }
-                break;
+            if (number_of_pressed_keys() == 0)
+            {
+                repeat = false;
+                keypressed = false;
+                firstpress = true;
+                repeat_ms = INITIAL_REPEAT_MS;
+            }
+            break;
         }
     }
 
@@ -149,7 +148,7 @@ int main(int argc, char **argv)
     auto game = Game();
     std::cout << "TETRIS!" << '\n';
 
-    while(!game_over)
+    while (!game_over)
     {
         handle_input(game);
 
@@ -169,7 +168,7 @@ int main(int argc, char **argv)
         {
             game.draw(screen_manager);
             screen_manager.show();
-            
+
             lastUpdateTime = Clock::now();
             game.unset_update();
         }

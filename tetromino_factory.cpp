@@ -20,12 +20,14 @@ std::map<int, TetrominoType> tetromino_type_from_index{
 
 TetrominoFactory::TetrominoFactory() : random_engine(std::random_device{}()), tetromino_distribution(0, 6)
 {
+  // Create the first next block
+  next_block = create_random();
 }
 
 Tetromino TetrominoFactory::create(TetrominoType type)
 {
   auto tetromino = Tetromino(type);
-  tetromino.set_color(colormap.at(type));
+  tetromino.set_color(tetromino_colormap().at(type));
   return tetromino;
 }
 

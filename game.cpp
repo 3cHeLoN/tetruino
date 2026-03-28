@@ -71,7 +71,7 @@ bool Game::update()
         duration = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - last_move);
         if (duration.count() > line_rates[getLevel()])
         {
-            tetromino.toggle_visible();
+            tetromino.toggleVisible();
             last_move = Clock::now();
             m_updated = true;
             // TODO: reset timer at stopping pause.
@@ -112,6 +112,7 @@ bool Game::update()
         }
 
         current_state = full_lines.size() > 0 ? ClearingLinesState : SpawningState;
+        m_updated = true;
         break;
     case ClearingLinesState:
         // move tetromino out of sight
@@ -170,7 +171,7 @@ void Game::toggle_pause()
     {
         std::cout << "Resuming game!" << '\n';
         current_state = m_old_state;
-        tetromino.set_visible(true);
+        tetromino.setVisible(true);
     }
 }
 
@@ -214,7 +215,7 @@ void Game::harddrop()
 {
     if (current_state == PausedState)
     {
-        //return true;
+        // return true;
     }
     while (move(DirectionDown))
     {
@@ -223,7 +224,7 @@ void Game::harddrop()
     current_state = CollidedState;
 }
 
-void Game::draw(ScreenManager manager)
+void Game::draw(ScreenManager &manager)
 {
     manager.set_background(board.background_color);
     manager.clear_screen();
